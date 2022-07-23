@@ -1,5 +1,8 @@
-import { renderAdList } from './render-ad-card.js';
+'use strict'
+
+import { renderProductList } from './render-product-list.js';
 import { adaptDataToClient } from './adapt-data.js';
+import { getData } from './api.js';
 
 var mySlider = new rSlider({
   target: '#sampleSlider',
@@ -11,30 +14,11 @@ var mySlider = new rSlider({
   step: 10000
 });
 
-
-
-
-const initApp = (productsData) => {
-  const products = adaptDataToClient(productsData);
-  renderAdList(products)
-}
-
-
-const getData = () => {
-  fetch('https://main-shop-fake-server.herokuapp.com/db')
-  .then((response) => {
-    if (response.ok) {
-      return response.json()
-    }
-    throw new Error();
-  })
-  .then((data) => data.products)
-  .then((productsData) => {
-    initApp(productsData);
-  })
-  .catch((err) => {
-    console.log(err)
+const initApp = () => {
+  getData((data) => {
+    const products = adaptDataToClient(data);
+    renderProductList(products)
   })
 }
 
-getData();
+initApp();

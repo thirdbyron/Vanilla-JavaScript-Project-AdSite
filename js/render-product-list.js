@@ -1,7 +1,7 @@
-import { activatePopups } from './activate-popup.js';
-import { deleteUnusableElements } from './utils/dom-operations.js';
+import { renderProductCards } from './render-product-cards.js';
+import { FIXED_LIST_QUANTITY } from './const.js';
 
-export const renderAdCard = (product) => {
+export const renderProductItem = (product) => {
   return `<li class="products__item product">
   <button class="product__favourite fav-add" type="button" aria-label="Добавить в избранное">
     <svg width="22" height="20" viewBox="0 0 22 20" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -25,17 +25,16 @@ export const renderAdCard = (product) => {
     </h3>
     <div class="product__price">${product.formattedPrice} ₽</div>
     <div class="product__address">${product.address.city}, ${product.address.street}</div>
-    <div class="product__date">${product.publishDate}</div>
+    <div class="product__date" title="${product.dateFormatted}">${product.publishDateToClient}</div>
   </div>
 </li>`
 }
 
-export const renderAdList = (products) => {
-  const shortProducts = products.slice(0, 7);
+export const renderProductList = (products) => {
+  const shortProducts = products.slice(0, FIXED_LIST_QUANTITY);
   const productsListElement = document.querySelector('.results__list');
-  deleteUnusableElements(productsListElement);
   shortProducts.forEach((product) => {
-    productsListElement.insertAdjacentHTML("beforeend", renderAdCard(product));
+    productsListElement.insertAdjacentHTML("beforeend", renderProductItem(product));
   })
-  activatePopups(shortProducts)
+  renderProductCards(shortProducts)
 }

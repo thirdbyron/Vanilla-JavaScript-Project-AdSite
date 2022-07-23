@@ -1,13 +1,13 @@
-import { deleteUnusableElements } from './utils/dom-operations.js';
+const popupElement = document.querySelector('.popup');
 
-const getPopupTemplate = (product) => {
+const getProductCardTemplate = (product) => {
   return `<div class="popup__inner">
   <button class="popup__close" type="button" aria-label="Закрыть">
     <svg width="16" height="16" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
       <path fill-rule="evenodd" clip-rule="evenodd" d="M0.292893 0.292893C0.683418 -0.0976311 1.31658 -0.0976311 1.70711 0.292893L8 6.58579L14.2929 0.292893C14.6834 -0.0976311 15.3166 -0.0976311 15.7071 0.292893C16.0976 0.683418 16.0976 1.31658 15.7071 1.70711L9.41421 8L15.7071 14.2929C16.0976 14.6834 16.0976 15.3166 15.7071 15.7071C15.3166 16.0976 14.6834 16.0976 14.2929 15.7071L8 9.41421L1.70711 15.7071C1.31658 16.0976 0.683418 16.0976 0.292893 15.7071C-0.0976311 15.3166 -0.0976311 14.6834 0.292893 14.2929L6.58579 8L0.292893 1.70711C-0.0976311 1.31658 -0.0976311 0.683418 0.292893 0.292893Z"/>
     </svg>
   </button>
-  <div class="popup__date">3 дня назад</div>
+  <div class="popup__date" title="${product.dateFormatted}">${product.publishDateToClient}</div>
   <h3 class="popup__title">${product.name}</h3>
   <div class="popup__price">${product.formattedPrice} ₽</div>
   <div class="popup__columns">
@@ -56,13 +56,13 @@ const getPopupTemplate = (product) => {
       <div class="popup__seller seller seller--good">
         <h3>Продавец</h3>
         <div class="seller__inner">
-          <a class="seller__name" href="#">Автосалон Pony Car</a>
-          <div class="seller__rating"><span>4.9</span></div>
+          <a class="seller__name" href="#">${product.seller.fullname}</a>
+          <div class=" seller__rating"><span class="seller--bad">${product.seller.rating}</span></div>
         </div>
       </div>
       <div class="popup__description">
         <h3>Описание товара</h3>
-        <p>Форд Мустанг 2020 года выпуска, один владелец, пробег 1 км, объём двигателя 5,8 литра, 662 л.с., максимальная скорость — 320 км/ч. Причина продажи — страшно ездить.</p>
+        <p>${product.description}</p>
       </div>
     </div>
     <div class="popup__right">
@@ -75,20 +75,39 @@ const getPopupTemplate = (product) => {
 </div>`
 }
 
-const setPopupConfig = (product) => {
-  const popup = document.querySelector('.popup');
-  deleteUnusableElements(popup);
-  popup.insertAdjacentHTML("beforeend", getPopupTemplate(product));
-  popup.classList.add('popup--active');
-
+const closePopup = () => {
+  popupElement.classList.remove('popup--active');
+  window.removeEventListener('click', closeOutPopupHandler);
 }
 
-export const activatePopups = (products) => {
-  const titleLinks = document.querySelectorAll('.product__title a');
-  titleLinks.forEach((link, index) => {
-    const product = products[index]
+const closeOutPopupHandler = (evt) => {
+  if (evt.target === popupElement) {
+    closePopup();
+  }
+} 
+
+const closePopupHandler = () => {
+  closePopup();
+};
+
+const addEventListenerOnClosePopup = () => {
+  const closePopupElement = popupElement.querySelector('.popup__close');
+  popupElement.classList.add('popup--active');
+  closePopupElement.addEventListener('click', closePopupHandler);
+  window.addEventListener('click', closeOutPopupHandler);
+}
+
+const openProductCard = (product) => {
+  popupElement.insertAdjacentHTML("beforeend", getProductCardTemplate(product));
+  addEventListenerOnClosePopup();
+}
+
+export const renderProductCards = (products) => {
+  const titleLinkElements = document.querySelectorAll('.product__title a');
+  titleLinkElements.forEach((link, index) => {
+    const product = products[index];
     link.addEventListener('click', () => {
-      setPopupConfig(product)
+      openProductCard(product);
     })
   })
-  }
+};
