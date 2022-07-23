@@ -98,6 +98,7 @@ const addEventListenerOnClosePopup = () => {
 }
 
 const openProductCard = (product) => {
+  popupElement.removeChild(popupElement.firstChild);
   popupElement.insertAdjacentHTML("beforeend", getProductCardTemplate(product));
   addEventListenerOnClosePopup();
 }
